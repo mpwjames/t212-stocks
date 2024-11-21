@@ -61,6 +61,9 @@ def main():
             new_stocks = filtered_rows[['shortName', 'type', 'date']]
             new_stocks.columns = ['Name', 'type', 'date']
 
+            # Format the date to the desired format
+            new_stocks['date'] = new_stocks['date'].dt.strftime('%Y-%m-%d %H:%M')
+
             # Create email content
             header = 'New stocks added to Trading212:\n\nName | Type | Date\n'
             rows = '\n'.join(f"{row['Name']} | {row['type']} | {row['date']}" 
