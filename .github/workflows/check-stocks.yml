@@ -2,7 +2,7 @@ name: Check T212 Stocks
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Runs every 5 minutes
+    - cron: '*/15 13-22 * * 1-5'  # Every 15 mins, 14:00-21:00 UTC, Monday-Friday
   workflow_dispatch:        # Allows manual triggering
 
 permissions:
