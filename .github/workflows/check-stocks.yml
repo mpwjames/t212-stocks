@@ -1,0 +1,50 @@
+# .github/workflows/check-stocks.yml
+name: Check T212 Stocks
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Runs every 5 minutes
+  workflow_dispatch:
+
+jobs:
+  check-stocks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # This is important to ensure we can commit back to the repository
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas requests
+          
+      - name: Download previous CSV
+        run: |
+          # Create empty CSV if it doesn't exist in the repository
+          if [ ! -f t212_current.csv ]; then
+            echo "Creating empty CSV file"
+            echo "dummy,data" > t212_current.csv
+          fi
+          
+      - name: Run stock checker
+        env:
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          RECIPIENTS: ${{ secrets.RECIPIENTS }}
+          T212_API_KEY: ${{secrets.T212_API_KEY}}
+
+        run: python stock_checker.py
+        
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add t212_current.csv
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update stock data" && git push)
