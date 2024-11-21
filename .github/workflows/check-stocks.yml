@@ -1,10 +1,12 @@
-# .github/workflows/check-stocks.yml
 name: Check T212 Stocks
 
 on:
   schedule:
     - cron: '*/5 * * * *'  # Runs every 5 minutes
-  workflow_dispatch:
+  workflow_dispatch:        # Allows manual triggering
+
+permissions:
+  contents: write          # Explicitly set permissions
 
 jobs:
   check-stocks:
@@ -12,7 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # This is important to ensure we can commit back to the repository
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Set up Python
@@ -27,7 +28,6 @@ jobs:
           
       - name: Download previous CSV
         run: |
-          # Create empty CSV if it doesn't exist in the repository
           if [ ! -f t212_current.csv ]; then
             echo "Creating empty CSV file"
             echo "dummy,data" > t212_current.csv
@@ -39,7 +39,6 @@ jobs:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           RECIPIENTS: ${{ secrets.RECIPIENTS }}
           T212_API_KEY: ${{secrets.T212_API_KEY}}
-
         run: python stock_checker.py
         
       - name: Commit and push if changed
