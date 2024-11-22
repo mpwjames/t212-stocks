@@ -63,7 +63,7 @@ def main():
 
             # Format the date to the desired format
             new_stocks['date'] = new_stocks['date'].dt.strftime('%Y-%m-%d %H:%M')
-            new_stocks = new_stocks.drop_duplicates(keep='first)
+            new_stocks = new_stocks.drop_duplicates(keep='first')
 
             # Create email content
             header = 'New stocks added to Trading212:\n\nName | Type | Date\n'
